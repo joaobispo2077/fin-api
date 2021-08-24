@@ -6,4 +6,4 @@ class Conflict extends HttpError {
   }
 }
 
-module.exports = Conflict;
+module.exports = { Conflict };
