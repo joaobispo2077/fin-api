@@ -9,7 +9,8 @@ class CustomerRepository {
 
   async getByCPF(cpf) {
 
-    return this.customers.find(customer => customer.cpf === cpf);
+    const customer = this.customers.find(customer => customer.cpf === cpf);
+    return customer;
   }
 }
 

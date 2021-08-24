@@ -4,23 +4,31 @@
  *  id - uuid
  *  statement - string
  */
-const { Conflict } = require('../errors/Conflict');
 const { v4: uuid } = require('uuid');
+
 const { CustomerRepository } = require('../repositories/CustomerRepository');
+
+const { Conflict } = require('../errors/Conflict');
+const { NotFound } = require('../errors/NotFound');
 
 class AccountService {
   constructor(customerRepository = new CustomerRepository()) {
     this.customerRepository = customerRepository;
   }
 
-  async getStatementByCpfg(cpf) {
-    return await this.customerRepository.getByCPF(cpf);
+  async getStatementByCpf(cpf) {
+    const customer = await this.customerRepository.getByCPF(cpf);
+
+    if (!customer) {
+      throw new NotFound('Customer was not found.');
+    }
+
+    return customer.statement;
   }
 
 
   async create({ cpf, name }) {
     const isCustomerAlreadyExists = await this.customerRepository.getByCPF(cpf);
-    console.info(isCustomerAlreadyExists);
 
     if (isCustomerAlreadyExists) {
       throw new Conflict('Customer already exists.');
@@ -31,7 +39,8 @@ class AccountService {
     const account = {
       name,
       id,
-      cpf
+      cpf,
+      statement: [],
     };
 
 

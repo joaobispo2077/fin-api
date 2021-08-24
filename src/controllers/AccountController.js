@@ -14,6 +14,13 @@ class AccountController {
 
     return response.status(201).json(createdAccount);
   }
+
+  async getStatementByCpf(request, response) {
+    const { cpf } = request.params;
+
+    const statement = await accountService.getStatementByCpf(cpf);
+    return response.json(statement);
+  }
 }
 
 module.exports = { AccountController };
