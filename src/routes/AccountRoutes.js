@@ -63,6 +63,20 @@ AccountRoutes.post('/account', async (request, response) => {
   return response.status(201).json(account);
 });
 
+AccountRoutes.get('/account', ensureExistsAccount, async (request, response) => {
+  const { customer } = request;
+
+  return response.status(200).json(customer);
+});
+
+AccountRoutes.put('/account', ensureExistsAccount, async (request, response) => {
+  const { name } = request.body;
+  const { customer } = request;
+
+  customer.name = name;
+  return response.status(200).send();
+});
+
 AccountRoutes.get('/statements', ensureExistsAccount, async (request, response) => {
   const { customer } = request;
 
