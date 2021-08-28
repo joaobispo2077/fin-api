@@ -41,8 +41,6 @@ const ensureExistsAccount = (request, response, next) => {
   return next();
 };
 
-
-
 AccountRoutes.post('/account', async (request, response) => {
   const { cpf, name } = request.body;
 
@@ -67,6 +65,13 @@ AccountRoutes.get('/account', ensureExistsAccount, async (request, response) => 
   const { customer } = request;
 
   return response.status(200).json(customer);
+});
+
+AccountRoutes.delete('/account', ensureExistsAccount, async (request, response) => {
+  const { customer } = request;
+
+  customers.splice(customer, 1);
+  return response.status(204).send();
 });
 
 AccountRoutes.put('/account', ensureExistsAccount, async (request, response) => {
