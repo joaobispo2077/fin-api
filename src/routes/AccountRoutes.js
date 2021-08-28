@@ -120,13 +120,20 @@ AccountRoutes.post('/deposit', ensureExistsAccount, async (request, response) =>
   return response.status(201).send();
 });
 
+AccountRoutes.get('/balance', ensureExistsAccount, async (request, response) => {
+  const { customer } = request;
+
+  const balance = getBalanceByStatements(customer.statements);
+
+  response.status(200).json({ balance: balance });
+});
+
 AccountRoutes.post('/widthdraw', ensureExistsAccount, async (request, response) => {
   const { amount } = request.body;
 
   const { customer } = request;
 
   const balance = getBalanceByStatements(customer.statements);
-  console.log(balance);
 
   const isInsuficientFunds = balance < amount;
   if (isInsuficientFunds) {
