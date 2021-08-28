@@ -69,6 +69,21 @@ AccountRoutes.get('/statements', ensureExistsAccount, async (request, response) 
   return response.json({ statements: customer.statements });
 });
 
+AccountRoutes.get('/statements/date', ensureExistsAccount, async (request, response) => {
+  const { customer } = request;
+  const { date } = request.query;
+
+  const normalizedDate = new Date(date + ' 00:00').toDateString();
+
+  const statements = customer.statements.filter(statement => {
+    console.log(new Date(statement.created_at).toDateString());
+    return new Date(statement.created_at).toDateString() === normalizedDate;
+  }
+  );
+
+  return response.json({ statements: statements });
+});
+
 AccountRoutes.post('/deposit', ensureExistsAccount, async (request, response) => {
   const { description, amount } = request.body;
 
