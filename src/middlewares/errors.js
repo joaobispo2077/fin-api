@@ -1,7 +1,7 @@
 const { HttpError } = require("../errors/HttpError");
 
 async function errorsMiddleware(error, request, response, next) {
-  console.error("@Error:stack", error);
+  // console.error("@Error:stack", error);
   console.error("@Error:name", error.name);
   console.error("@Error:message", error.message);
 

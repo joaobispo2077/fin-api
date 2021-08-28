@@ -16,12 +16,18 @@ class AccountService {
     this.customerRepository = customerRepository;
   }
 
-  async getStatementByCpf(cpf) {
+  async getCustomerByCpf(cpf) {
     const customer = await this.customerRepository.getByCPF(cpf);
-
+    console.info('customer', customer);
     if (!customer) {
       throw new NotFound('Customer was not found.');
     }
+
+    return customer;
+  }
+
+  async getStatementByCpf(cpf) {
+    const customer = await this.getCustomerByCpf(cpf);
 
     return customer.statement;
   }

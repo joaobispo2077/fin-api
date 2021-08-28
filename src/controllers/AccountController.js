@@ -16,10 +16,14 @@ class AccountController {
   }
 
   async getStatementByCpf(request, response) {
-    const { cpf } = request.params;
+    const { cpf } = request;
 
     const statement = await accountService.getStatementByCpf(cpf);
     return response.json(statement);
+  }
+
+  async deposit(request, response) {
+
   }
 }
 
