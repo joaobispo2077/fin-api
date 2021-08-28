@@ -4,6 +4,28 @@ const { v4: uuid } = require('uuid');
 
 const customers = [];
 
+const getCustomerByCpf = (cpf) => {
+  const customer = customers.find(customer => customer.cpf === cpf);
+  return customer;
+}
+
+const getBalanceByStatements = (statements) => {
+  const balance = statements.reduce((acc, actualStatement) => {
+    if (actualStatement.type === 'credit') {
+      return acc + actualStatement.amount;
+    }
+
+    if (actualStatement.type === 'debit') {
+      return acc - actualStatement.amount;
+    }
+
+
+    return acc;
+  }, 0);
+
+  return balance;
+}
+
 const AccountRoutes = require('express').Router();
 
 const ensureExistsAccount = (request, response, next) => {
@@ -19,10 +41,6 @@ const ensureExistsAccount = (request, response, next) => {
   return next();
 };
 
-const getCustomerByCpf = (cpf) => {
-  const customer = customers.find(customer => customer.cpf === cpf);
-  return customer;
-}
 
 
 AccountRoutes.post('/account', async (request, response) => {
@@ -38,17 +56,17 @@ AccountRoutes.post('/account', async (request, response) => {
     name,
     id,
     cpf,
-    statement: [],
+    statements: [],
   };
   customers.push(account);
 
   return response.status(201).json(account);
 });
 
-AccountRoutes.get('/statement', ensureExistsAccount, async (request, response) => {
+AccountRoutes.get('/statements', ensureExistsAccount, async (request, response) => {
   const { customer } = request;
 
-  return response.json({ statement: customer.statement });
+  return response.json({ statements: customer.statements });
 });
 
 AccountRoutes.post('/deposit', ensureExistsAccount, async (request, response) => {
@@ -63,7 +81,31 @@ AccountRoutes.post('/deposit', ensureExistsAccount, async (request, response) =>
     type: 'credit'
   };
 
-  customer.statement.push(statementOperation);
+  customer.statements.push(statementOperation);
+
+  return response.status(201).send();
+});
+
+AccountRoutes.post('/widthdraw', ensureExistsAccount, async (request, response) => {
+  const { amount } = request.body;
+
+  const { customer } = request;
+
+  const balance = getBalanceByStatements(customer.statements);
+  console.log(balance);
+
+  const isInsuficientFunds = balance < amount;
+  if (isInsuficientFunds) {
+    throw new Conflict('Insufficient funds.');
+  }
+
+  const statementOperation = {
+    amount: amount,
+    created_at: new Date(),
+    type: 'debit'
+  };
+
+  customer.statements.push(statementOperation);
 
   return response.status(201).send();
 });
